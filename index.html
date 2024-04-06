@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一包化残薬調整計算</title>
+</head>
+<body>
+
+    <h3>一包化残薬調整計算</h3>
+<form id="calcForm">
+    <p>①処方日数を入力してください。</p>
+    <label for="prescriptionDays">処方日数：</label>
+    <label for=""><input type="number" id="prescriptionDays" name="prescriptionDays">日分</label><br><br>
+    <p>--------------------</p>
+    <p>②それぞれの残薬を入力してください。ただし残薬がないときは“0”を入力してください。</p>
+    
+    <label for="morning">朝の残薬：</label>
+    <label for=""><input type="number" id="morning" name="morning">包</label><br><br>
+    
+    <label for="noon">昼の残薬：</label>
+    <label for=""><input type="number" id="noon" name="noon">包</label><br><br>
+    
+    <label for="evening">夕の残薬：</label>
+    <label for=""><input type="number" id="evening" name="evening">包</label><br><br>
+    
+    <label for="night">寝る前の残薬：</label>
+    <label for=""><input type="number" id="night" name="night">包</label><br><br>
+    <p>--------------------</p>
+    <p>③求めたい用法を入力してください。</p>
+    
+    <input type="checkbox" id="morningCheckbox" name="morningCheckbox">
+    <label for="morningCheckbox">朝</label>
+    
+    <input type="checkbox" id="noonCheckbox" name="noonCheckbox">
+    <label for="noonCheckbox">昼</label>
+    
+    <input type="checkbox" id="eveningCheckbox" name="eveningCheckbox">
+    <label for="eveningCheckbox">夕</label>
+    
+    <input type="checkbox" id="nightCheckbox" name="nightCheckbox">
+    <label for="nightCheckbox">寝る前</label><br>
+    
+    <button type="button" onclick="addSet()">追加・計算する</button><br><br>
+    <p>④追加の用法の計算は再度、用法を入力して“追加・計算ボタン”を押してください。</p>
+    <p>＊クリアはページのリロードを行ってください。</p>
+    <p>結果はこちらに表示されます↓</p>
+    
+    <div id="setsContainer">
+    <!-- ここに追加されたセットが表示されます -->
+    </div>
+</form>
+
+<script>
+function calculate(morning, noon, evening, night, checkboxes) {
+    var total = 0;
+    
+    checkboxes.forEach(function(checkbox) {
+    switch(checkbox.id) {
+        case 'morningCheckbox':
+        total += morning;
+        break;
+        case 'noonCheckbox':
+        total += noon;
+        break;
+        case 'eveningCheckbox':
+        total += evening;
+        break;
+        case 'nightCheckbox':
+        total += night;
+        break;
+    }
+    });
+  
+  return total;
+}
+
+function addSet() {
+  var prescriptionDays = parseInt(document.getElementById('prescriptionDays').value);
+  var morning = parseInt(document.getElementById('morning').value);
+  var noon = parseInt(document.getElementById('noon').value);
+  var evening = parseInt(document.getElementById('evening').value);
+  var night = parseInt(document.getElementById('night').value);
+  
+  var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+  
+  var total = calculate(morning, noon, evening, night, checkboxes);
+  
+  var adjusted = prescriptionDays - Math.floor(total / checkboxes.length);
+  
+  var setsContainer = document.getElementById('setsContainer');
+  var setDiv = document.createElement('div');
+  
+  setDiv.innerHTML = '<label>調整後の残薬：</label> <input type="text" value="' + adjusted + '" readonly>';
+  
+  // チェックした朝、昼、夕、寝る前を表示する
+  var selectedTimes = '';
+  checkboxes.forEach(function(checkbox) {
+    selectedTimes += checkbox.labels[0].textContent + ', ';
+  });
+  selectedTimes = selectedTimes.slice(0, -2); // 最後のカンマを削除する
+  setDiv.innerHTML += '<br><label>チェックした時間帯：</label> <span>' + selectedTimes + '</span><br><br>';
+  
+  setsContainer.appendChild(setDiv);
+}
+</script>
+
+<footer>
+    <p>Presented by 天草郡市薬剤師会</p>
+</footer>
+
+</body>
+</html>
